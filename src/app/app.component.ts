@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
     this.timetable.addLocations(['London', 'Paris', 'Los Angeles']);
 
     this.timetable.addEvent('Sightseeing', 'London', new Date(2018, 8, 25, 9), new Date(2018, 8, 25, 11, 30), { url: '#' });
+    this.timetable.addEvent('Sightseeing', 'London', new Date(2018, 8, 25, 12), new Date(2018, 8, 25, 15, 30), { url: '#' });
 
     this.timetable.addEvent('Zumba', 'Paris', new Date(2018, 8, 27, 9), new Date(2018, 8, 27, 10), { url: '#' });
 
