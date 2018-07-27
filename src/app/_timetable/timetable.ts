@@ -1,6 +1,4 @@
-import { Scope } from './scope';
-import { ITimetable } from 'src/app/tt/ITimetable';
-
+import { Scope } from './_models/scope';
 
 export class Timetable {
 

@@ -1,4 +1,4 @@
-export interface ITimetable {
+export interface Tt {
     scope: any;
     locations: Array<string>;
     events: Array<any>;

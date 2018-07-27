@@ -1,1 +1,34 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    font-size: 15px;
+}
+  
+
+a {
+    text-decoration: none;
+}
+	
+
+.row-heading {
+    font-weight: 500;
+	font-size: 0.7em;
+	text-transform: uppercase;
+}
+	
+
+.timetable .time-label {
+    font-size: 0.8em;
+	font-weight: 500;
+}
+
+
+.timetable .time-entry.vip-only {
+    background-color: #C490F5;
+	border: 1px solid #6A16B8;
+	&:hover {
+        background-color: #AE67F0;
+    }		
+}
+	

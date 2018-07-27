@@ -1,4 +1,4 @@
-import { ITimetable } from 'src/app/tt/ITimetable';
+import { Tt } from 'src/app/_timetable/_models/tt';
 
 
 export class Renderer {
@@ -7,7 +7,6 @@ export class Renderer {
     selector;
     container;
 
-
     constructor(tt) {
         if (!(this.isOfTypeITimetable(tt))) {
             throw new Error('Initialize renderer using a Timetable');
@@ -15,16 +14,21 @@ export class Renderer {
          this.timetable = tt;
     }
 
-    isOfTypeITimetable(object: any): object is ITimetable {
-        return (<ITimetable>object) !== null;
+    isOfTypeITimetable(object: any): object is Tt {
+        return (<Tt>object) !== null;
+    }
+
+    prettyFormatHour(e) {
+        const t = 10 > e ? '0' : '';
+        return t + e + ':00';
     }
 
     draw(selector) {
         this.container = selector;
         this.checkContainerPrecondition(this.container);
         this.emptyNode(this.container);
-        this.appendTimetableAside(this.container);
-        this.appendTimetableSection(this.container);
+        this.r(this.container);
+        this.a(this.container);
         // syncscroll.reset();
     }
 
@@ -40,131 +44,98 @@ export class Renderer {
         }
     }
 
-    appendTimetableAside(container) {
-        const asideNode = container.appendChild(document.createElement('aside'));
-        const asideULNode = asideNode.appendChild(document.createElement('ul'));
-        this.appendRowHeaders(asideULNode);
+    r(e) {
+        const t = e.appendChild(document.createElement('aside'));
+        const n = t.appendChild(document.createElement('ul'));
+        this.o(n);
     }
 
-    appendRowHeaders(ulNode) {
-        for (let k = 0; k < this.timetable.locations.length; k++) {
-            const liNode = ulNode.appendChild(document.createElement('li'));
-            const spanNode = liNode.appendChild(document.createElement('span'));
-            spanNode.className = 'row-heading';
-            spanNode.textContent = this.timetable.locations[k];
+    o(e) {
+        for (let t = 0; t < this.timetable.locations.length; t++) {
+            const n = e.appendChild(document.createElement('li'));
+            const r = n.appendChild(document.createElement('span'));
+            r.className = 'row-heading';
+            r.textContent = this.timetable.locations[t];
         }
     }
 
-    appendTimetableSection(container) {
-        const sectionNode = container.appendChild(document.createElement('section'));
-        const headerNode = this.appendColumnHeaders(sectionNode);
-        const timeNode = sectionNode.appendChild(document.createElement('time'));
-        timeNode.className = 'syncscroll';
-        timeNode.setAttribute('name', 'scrollheader');
-        const width = headerNode.scrollWidth + 'px';
-        this.appendTimeRows(timeNode, width);
+    a(e) {
+        const t = e.appendChild(document.createElement('section'));
+        const n = t.appendChild(document.createElement('time'));
+        this.u(n), this.l(n);
     }
 
-    appendColumnHeaders(node) {
-        const headerNode = node.appendChild(document.createElement('header'));
-        headerNode.className = 'syncscroll';
-        headerNode.setAttribute('name', 'scrollheader');
-        const headerULNode = headerNode.appendChild(document.createElement('ul'));
-
-        let completed = false;
-        let looped = false;
-
-        for (let hour = this.timetable.scope.hourStart; !completed;) {
-            const liNode = headerULNode.appendChild(document.createElement('li'));
-            const spanNode = liNode.appendChild(document.createElement('span'));
-            spanNode.className = 'time-label';
-            spanNode.textContent = this.timetable.prettyFormatHour(hour);
-
-            if (hour === this.timetable.scope.hourEnd && (this.timetable.scope.hourStart !== this.timetable.scope.hourEnd || looped)) {
-                completed = true;
-            }
-            if (++hour === 24) {
-                hour = 0;
-                looped = true;
-            }
-        }
-        return headerNode;
-    }
-
-    appendTimeRows(node, width) {
-        const ulNode = node.appendChild(document.createElement('ul'));
-        ulNode.style.width = width;
-        ulNode.className = 'room-timeline';
-        for (let k = 0; k < this.timetable.locations.length; k++) {
-            const liNode = ulNode.appendChild(document.createElement('li'));
-            this.appendLocationEvents(this.timetable.locations[k], liNode);
-        }
-    }
-
-    appendLocationEvents(location, node) {
-        for (let k = 0; k < this.timetable.events.length; k++) {
-            const event = this.timetable.events[k];
-            if (event.location === location) {
-                this.appendEvent(event, node);
+    u(e) {
+        for (
+            let
+            t = e.appendChild(document.createElement('header')),
+            n = t.appendChild(document.createElement('ul')),
+            r = !1,
+            o = !1,
+            a = this.timetable.scope.hourStart; !r;) {
+            const i = n.appendChild(document.createElement('li'));
+            const u = i.appendChild(document.createElement('span'));
+            u.className = 'time-label';
+            u.textContent = this.prettyFormatHour(a);
+            if (a !== this.timetable.scope.hourEnd
+                || this.timetable.scope.hourStart === this.timetable.scope.hourEnd
+                && !o || (r = !0), 24 === ++a ) {
+                    a = 0, o = !0;
             }
         }
     }
 
-    appendEvent(event, node) {
-        const hasOptions = event.options !== undefined;
-        let hasURL, hasAdditionalClass, hasDataAttributes, hasClickHandler = false;
-
-        if (hasOptions) {
-            hasURL = event.options.url !== undefined;
-            hasAdditionalClass = event.options.class !== undefined;
-            hasDataAttributes = event.options.data !== undefined;
-            hasClickHandler = event.options.onClick !== undefined;
+    l(e) {
+        const t = e.appendChild(document.createElement('ul'));
+        t.className = 'room-timeline';
+        for (let n = 0; n < this.timetable.locations.length; n++) {
+            const r = t.appendChild(document.createElement('li'));
+            this.s(this.timetable.locations[n], r);
         }
+    }
 
-        const elementType = hasURL ? 'a' : 'span';
-        const eventNode = node.appendChild(document.createElement(elementType));
-        const smallNode = eventNode.appendChild(document.createElement('small'));
-        eventNode.title = event.name;
-
-        if (hasURL) {
-            eventNode.href = event.options.url;
-        }
-
-        if (hasDataAttributes) {
-            for (const key in event.options.data) {
-                if (event.options.data.hasOwnProperty(key)) {
-                    eventNode.setAttribute('data-' + key, event.options.data[key]);
-                }
+    s(e, t) {
+        for (let n = 0; n < this.timetable.events.length; n++) {
+            const r = this.timetable.events[n];
+            if (r.location === e)  {
+                this.d(r, t);
             }
         }
+    }
 
-        if (hasClickHandler) {
-            eventNode.addEventListener('click', function (e) {
-                event.options.onClick(event, this.timetable, e);
-            });
+    d(e, t) {
+        const n = e.url,
+            r = n ? 'a' : 'span',
+            o = t.appendChild(document.createElement(r)),
+            a = o.appendChild(document.createElement('small'));
+        o.title = e.name;
+        if (n) {
+            o.href = e.url;
         }
-
-        eventNode.className = hasAdditionalClass ? 'time-entry ' + event.options.class : 'time-entry';
-        eventNode.style.width = this.computeEventBlockWidth(event);
-        eventNode.style.left = this.computeEventBlockOffset(event);
-        smallNode.textContent = event.name;
+        o.className = 'time-entry';
+        o.style.width = this.h(e);
+        o.style.left = this.f(e);
+        a.textContent = e.name;
     }
 
-    computeEventBlockWidth(event) {
-        const start = event.startDate;
-        const end = event.endDate;
-        const durationHours = this.computeDurationInHours(start, end);
-        return durationHours / this.timetable.scopeDurationHours * 100 + '%';
+    h(e) {
+        const
+            t = e.startDate,
+            n = e.endDate,
+            r = this.m(t, n);
+        return r / this.timetable.scopeDurationHours * 100 + '%';
     }
 
-    computeDurationInHours(start, end) {
-        return (end.getTime() - start.getTime()) / 1000 / 60 / 60;
+
+    m(e, t) {
+        return (t.getTime() - e.getTime()) / 1e3 / 60 / 60;
     }
 
-    computeEventBlockOffset(event) {
-        const scopeStartHours = this.timetable.scope.hourStart;
-        const eventStartHours = event.startDate.getHours() + (event.startDate.getMinutes() / 60);
-        const hoursBeforeEvent = this.timetable.getDurationHours(scopeStartHours, eventStartHours);
-        return hoursBeforeEvent / this.timetable.scopeDurationHours * 100 + '%';
+    f(e) {
+        const
+            t = e.startDate,
+            n = t.getHours() + (t.getMinutes() / 60);
+        return (n - this.timetable.scope.hourStart) / this.timetable.scopeDurationHours * 100 + '%';
     }
+
 }
