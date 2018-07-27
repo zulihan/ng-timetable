@@ -1,8 +1,10 @@
+import { Scope } from './scope';
+
+
 export interface Tt {
-    scope: any;
+    events: Array<{}>;
     locations: Array<string>;
-    events: Array<any>;
-    scopeDurationHours: any;
-    prettyFormatHour(hour: any);
-    getDurationHours(startHour: any, endHour: any);
+    newLocations: Array<string>;
+    scope: Scope;
+    scopeDurationHours: number;
 }
