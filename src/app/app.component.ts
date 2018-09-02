@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
     this.timetable.addEvent('Sightseeing', 'London', new Date(2018, 8, 25, 9), new Date(2018, 8, 25, 11, 30), { url: '#' });
     this.timetable.addEvent('Sightseeing', 'London', new Date(2018, 8, 25, 12), new Date(2018, 8, 25, 15, 30), { url: '#' });
 
-    this.timetable.addEvent('Zumba', 'Paris', new Date(2018, 8, 27, 9), new Date(2018, 8, 27, 10), { url: '#' });
+    this.timetable.addEvent('Zumba', 'Paris', new Date(2018, 8, 27, 9), new Date(2018, 8, 27, 15, 45), { url: '#' });
 
     this.timetable.addEvent('Cocktails', 'Los Angeles', new Date(2018, 8, 22, 9), new Date(2018, 8, 22, 10), {  onClick: function(event) {
       window.alert('You clicked on the ' + event.name + ' event in ' + event.location + '. This is an example of a click handler');
