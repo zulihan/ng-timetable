@@ -1,4 +1,4 @@
-import { Scope } from './_models/scope';
+import {Scope} from './_models/scope';
 
 export class Timetable {
 
@@ -7,12 +7,13 @@ export class Timetable {
     events = [];
     newLocations = [];
     scopeDurationHours: number;
+    usingTwelveHour = false;
 
     constructor() {
         this.scope = {
-            hourStart: 0,
-            hourEnd: 24
-          };
+            hourStart: 9,
+            hourEnd: 17
+        };
         this.locations = [];
         this.events = [];
         this.scopeDurationHours = this.getDurationHours(this.scope.hourStart, this.scope.hourEnd);
@@ -22,6 +23,7 @@ export class Timetable {
         if (this.isValidHourRange(start, end)) {
             this.scope.hourStart = start;
             this.scope.hourEnd = end;
+            this.scopeDurationHours = this.getDurationHours(this.scope.hourStart, this.scope.hourEnd);
         } else {
             throw new RangeError('Timetable scope should consist of (start, end) in whole hours from 0 to 23');
         }
@@ -37,7 +39,7 @@ export class Timetable {
         const existingLocations = this.locations;
 
         if (this.hasProperFormat()) {
-            newLocations.forEach ( loc => {
+            newLocations.forEach(loc => {
                 if (!this.locationExistsIn(loc, existingLocations)) {
                     existingLocations.push(loc);
                 } else {
@@ -51,7 +53,27 @@ export class Timetable {
         return this;
     }
 
-    addEvent(name, location, start, end, options) {
+    addLocation(newLocation) {
+        function hasProperFormat() {
+            return newLocation instanceof Object;
+        }
+
+        const existingLocations = this.locations;
+
+        if (hasProperFormat()) {
+            if (!this.locationExistsIn(newLocation, existingLocations)) {
+                existingLocations.push(newLocation);
+            } else {
+                throw new Error('Location already exists');
+            }
+        } else {
+            throw new Error('Tried to add locations in wrong format');
+        }
+
+        return this;
+    }
+
+    addEvent(name, location, start, end, options = null) {
         if (!this.locationExistsIn(location, this.locations)) {
             throw new Error('Unknown location');
         }
@@ -89,7 +111,9 @@ export class Timetable {
     }
 
     locationExistsIn(loc, locs) {
-        return locs.indexOf(loc) !== -1;
+        return locs.findIndex(function (l) {
+            return l.id === loc;
+        }) !== -1;
     }
 
     isValidTimeRange(start, end) {
@@ -98,13 +122,32 @@ export class Timetable {
         return correctTypes && correctOrder;
     }
 
-    getDurationHours(startHour, endHour) {
+    getEventDurationHours(startHour, endHour) {
         return endHour >= startHour ? endHour - startHour : 24 + endHour - startHour;
     }
 
-    prettyFormatHour(hour) {
-        const prefix = hour < 10 ? '0' : '';
-        return prefix + hour + ':00';
+    getDurationHours(startHour, endHour) {
+        let duration = 0;
+        if (endHour > startHour) {
+            duration = endHour - startHour;
+        } else if (startHour === endHour) {
+            duration = 24;
+        } else {
+            duration = 24 + endHour - startHour;
+        }
+        return duration;
+    }
+
+    prettyFormatHour(hour, minute, usingTwelveHour) {
+        let prettyHour;
+        if (usingTwelveHour) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            prettyHour = ((hour + 11) % 12 + 1) + ':' + minute + period;
+        } else {
+            const prefix = hour < 10 ? '0' : '';
+            prettyHour = prefix + hour + ':' + minute;
+        }
+        return prettyHour;
     }
 
 }
